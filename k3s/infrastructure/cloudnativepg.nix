@@ -1,5 +1,9 @@
 # k3s/infrastructure/cloudnativepg.nix — CloudNativePG cluster + NodePort
-{k3sLib, ...}: {
+{
+  k3sLib,
+  cnpgStorageSize ? "50Gi",
+  ...
+}: {
   # Secret "postgresql-cluster-superuser" is injected by k3s/secrets.nix (cnpg-k8s-secrets service)
   k3s-cluster.manifests.cloudnativepg = k3sLib.mkList [
     # CNPG Cluster CRD
@@ -15,7 +19,7 @@
         imageName = "ghcr.io/cloudnative-pg/postgresql:17.2";
         instances = 3;
         storage = {
-          size = "50Gi";
+          size = cnpgStorageSize;
           storageClass = "local-path";
         };
         resources = {
