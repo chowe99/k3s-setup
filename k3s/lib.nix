@@ -73,6 +73,7 @@ in {
     livenessProbe ? null,
     readinessProbe ? null,
     envVars ? [],
+    imagePullSecrets ? [],
   }: let
     volumePairs = map mkVolumePair volumes;
     allPorts =
@@ -142,6 +143,7 @@ in {
             // lib.optionalAttrs (affinity != {}) {inherit affinity;}
             // lib.optionalAttrs (nodeSelector != {}) {inherit nodeSelector;}
             // lib.optionalAttrs (tolerations != []) {inherit tolerations;}
+            // lib.optionalAttrs (imagePullSecrets != []) {inherit imagePullSecrets;}
             // lib.optionalAttrs (dnsPolicy != null) {inherit dnsPolicy;}
             // lib.optionalAttrs hostNetwork {inherit hostNetwork;};
         };
