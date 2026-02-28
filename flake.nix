@@ -1,6 +1,7 @@
 {
   description = "Standalone web app deployment infrastructure — K3s + Gitea CI/CD";
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -21,6 +22,7 @@
   };
   outputs = {
     self,
+    nixpkgs,
     nixpkgs-unstable,
     home-manager,
     agenix,
