@@ -3,10 +3,10 @@
   config,
   pkgs,
   lib,
+  fullDomain,
   ...
 }: let
   cfg = config.k3s-cluster;
-
   # Common wrapper for K8s secret injection services
   mkSecretService = {
     name,
@@ -142,7 +142,7 @@ in {
         $KUBECTL create namespace apps --dry-run=client -o yaml | $KUBECTL apply -f -
 
         $KUBECTL create secret docker-registry gitea-registry-pull \
-          --docker-server=git.howse.top \
+          --docker-server=git.${fullDomain} \
           --docker-username=gitea_admin \
           --docker-password="$REGISTRY_TOKEN" \
           --namespace=apps \

@@ -96,12 +96,12 @@
       extraGroups = ["wheel" "docker"];
       shell = pkgs.zsh;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIArFnd2GORgeTd2HTOqy6aZfsHCluAs7nVmt19NV9e8b darkslayer@blackarch"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvwD8Or0RnfKcvW4jAWdgDaijtt9H/N3l10Dc0yIF1l slayer@nix-config"
       ];
     };
 
     users.users.root.openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIArFnd2GORgeTd2HTOqy6aZfsHCluAs7nVmt19NV9e8b darkslayer@blackarch"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvwD8Or0RnfKcvW4jAWdgDaijtt9H/N3l10Dc0yIF1l slayer@nix-config"
     ];
 
     programs.zsh.enable = true;

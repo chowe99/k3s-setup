@@ -87,5 +87,14 @@
       group = "root";
       mode = "0400";
     };
+
+    # myNymBox specific
+    myNymBox-ip = {
+      file = ../secrets/myNymBox-ip.age;
+      path = "/run/agenix/myNymBox-ip";
+      owner = "root";
+      group = "root";
+      mode = "0400";
+    };
   };
 }

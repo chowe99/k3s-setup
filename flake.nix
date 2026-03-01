@@ -39,7 +39,7 @@
     servers = {
       # Example:
       # webvps1 = { publicIp = "203.0.113.10"; };
-      myNymBox = { publicIp = "80.71.235.131"; };
+      myNymBox = { publicIp = ""; };
 
     };
 
@@ -138,7 +138,7 @@
     nixosConfigurations = {
       myNymBox = mkVps {
         hostname = "myNymBox";
-        publicIp = "80.71.235.131";
+        publicIp = "";
         gateway = "80.71.235.1";
         useGeneric = true;
         bootDevice = "/dev/sda";
