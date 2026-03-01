@@ -11,32 +11,36 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    dotfiles = {
-      url = "git+https://git.howse.top/cod/dotfiles";
-      flake = false;
-    };
     nixvim = {
       url = "github:nix-community/nixvim/";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = {
-    self,
-    nixpkgs,
-    nixpkgs-unstable,
-    home-manager,
-    agenix,
-    ...
-  } @ inputs: let
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nixpkgs-unstable,
+      home-manager,
+      agenix,
+      disko,
+      ...
+    } @ inputs: let
     lib = nixpkgs-unstable.lib;
-    baseDomain = "howse";
-    tld = "top";
+    baseDomain = "";
+    tld = "";
     fullDomain = "${baseDomain}.${tld}";
 
     # VPS nodes — add entries here as you provision new servers
     servers = {
       # Example:
       # webvps1 = { publicIp = "203.0.113.10"; };
+      myNymBox = { publicIp = "80.71.235.131"; };
+
     };
 
     nixosSystem = {
@@ -100,32 +104,64 @@
       interface ? "ens3",
       bootDevice ? "/dev/vda",
       prefixLength ? 24,
-      hardwareConfig ? ./hosts/${hostname}/hardware-configuration.nix,
+      hardwareConfig ? null,
       services ? [],
       extraModules ? [],
+      useGeneric ? false,
     }:
-      mkServer {
-        inherit hostname username system;
-        hostConfig = ./templates/vps-configuration.nix;
-        homeConfig = ./templates/minimal-home.nix;
-        extraModules =
-          [
-            hardwareConfig
-            {
-              vps = {inherit publicIp gateway interface bootDevice prefixLength;};
-            }
-          ]
-          ++ services
-          ++ extraModules;
-      };
+      let
+        baseModules = if useGeneric then genericModules else [];
+        hwConfig = if hardwareConfig != null then hardwareConfig else ./hosts/${if useGeneric then "generic" else hostname}/hardware-configuration.nix;
+      in
+        mkServer {
+          inherit hostname username system;
+          hostConfig = ./templates/vps-configuration.nix;
+          homeConfig = ./templates/minimal-home.nix;
+          extraModules =
+            baseModules
+            ++ [
+              hwConfig
+              {
+                vps = {inherit publicIp gateway interface bootDevice prefixLength;};
+              }
+            ]
+            ++ services
+            ++ extraModules;
+        };
+
+    genericModules = [
+      disko.nixosModules.disko
+      ./hosts/generic/disk-config.nix
+      ./hosts/generic/configuration.nix
+    ];
   in {
     nixosConfigurations = {
-      # Add VPS nodes here, e.g.:
-      # webvps1 = mkVps {
-      #   hostname = "webvps1";
-      #   publicIp = "203.0.113.10";
-      #   gateway = "203.0.113.1";
-      # };
+      myNymBox = mkVps {
+        hostname = "myNymBox";
+        publicIp = "80.71.235.131";
+        gateway = "80.71.235.1";
+        useGeneric = true;
+        bootDevice = "/dev/sda";
+        interface = "enp3s0";
+        services = [
+          ./k3s
+          ./configs/system-agenix.nix
+          {
+            k3s-cluster.enable = true;
+            _module.args = {
+              cnpgStorageSize = "10Gi";
+            };
+          }
+        ];
+      };
+
+      # NixOS Anywhere generic configuration
+      # Run: nix run nixpkgs#nixos-anywhere -- --flake .#generic --generate-hardware-config nixos-generate-config ./hosts/generic/hardware-configuration.nix root@<IP>
+      # After first install, remove --generate-hardware-config and use: nix run nixpkgs#nixos-anywhere -- .#generic root@<IP>
+      generic = nixpkgs-unstable.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = genericModules;
+      };
     };
   };
 }
