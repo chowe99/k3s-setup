@@ -27,7 +27,10 @@ in {
         isInitialServer = name == initialServerName;
       }) servers;
 
-      services.gitea.enable = lib.mkDefault true;
+      services.gitea = {
+        enable = lib.mkDefault true;
+        sshEnabled = lib.mkDefault true;
+      };
       services.gitea-runner.enable = lib.mkDefault true;
       services.cloudnativepg.enable = lib.mkDefault true;
     };
