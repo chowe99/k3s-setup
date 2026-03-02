@@ -135,6 +135,38 @@
       ./hosts/generic/configuration.nix
     ];
   in {
+    # Shared NixOS module for K3s cluster management
+    nixosModules = {
+      k3s-cluster = import ./k3s/module.nix;
+      default = self.nixosModules.k3s-cluster;
+    };
+
+    # Shared home-manager modules for tool configs
+    homeManagerModules = let
+      zsh = import ./configs/zsh.nix;
+      nixvim = import ./configs/nixvim.nix;
+      kitty = import ./configs/kitty.nix;
+      oh-my-posh = import ./configs/oh-my-posh.nix;
+      zoxide = import ./configs/zoxide.nix;
+      fd = import ./configs/fd.nix;
+      fzf = import ./configs/fzf.nix;
+      ripgrep = import ./configs/ripgrep.nix;
+      jq = import ./configs/jq.nix;
+      fastfetch = import ./configs/fastfetch.nix;
+      claude-code = import ./configs/claude-code.nix;
+      opencode = import ./configs/opencode.nix;
+    in {
+      inherit zsh nixvim kitty oh-my-posh zoxide fd fzf ripgrep jq fastfetch claude-code opencode;
+      # Bundle: all shared configs for a full server
+      server-tools = {
+        imports = [zsh nixvim kitty oh-my-posh zoxide fd fzf ripgrep jq fastfetch claude-code opencode];
+      };
+      # Bundle: minimal set for VPS
+      minimal-tools = {
+        imports = [zsh oh-my-posh zoxide fastfetch];
+      };
+    };
+
     nixosConfigurations = {
       myNymBox = mkVps {
         hostname = "myNymBox";
@@ -148,9 +180,6 @@
           ./configs/system-agenix.nix
           {
             k3s-cluster.enable = true;
-            _module.args = {
-              cnpgStorageSize = "10Gi";
-            };
           }
         ];
       };

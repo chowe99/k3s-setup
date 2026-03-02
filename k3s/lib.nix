@@ -279,6 +279,54 @@ in {
     inherit type stringData;
   };
 
+  # Common wrapper for K8s secret injection services
+  # Usage: mkSecretService { inherit pkgs; } { name, description, secretArgs, checkVar }
+  mkSecretService = {pkgs}: {
+    name,
+    description,
+    secretArgs,
+    checkVar,
+  }: {
+    systemd.services."${name}" = {
+      inherit description;
+      after = ["k3s.service"];
+      requires = ["k3s.service"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.writeShellScript name ''
+          #!/bin/sh
+          set -e
+
+          # Wait for K3s to be ready
+          sleep 10
+
+          # Use k3s kubectl
+          KUBECTL="/run/current-system/sw/bin/k3s kubectl"
+          if ! $KUBECTL version &>/dev/null 2>&1; then
+            echo "k3s kubectl not ready yet, skipping..."
+            exit 0
+          fi
+
+          ${secretArgs}
+
+          echo "${name} updated successfully"
+        ''}";
+      };
+    };
+
+    systemd.timers."${name}" = {
+      description = "Timer to refresh ${name}";
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnBootSec = "2min";
+        OnUnitActiveSec = "1h";
+        Unit = "${name}.service";
+      };
+    };
+  };
+
   # PodDisruptionBudget resource
   mkPdb = {
     name,

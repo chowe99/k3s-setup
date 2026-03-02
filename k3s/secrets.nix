@@ -8,6 +8,8 @@
 }: let
   cfg = config.k3s-cluster;
   # Common wrapper for K8s secret injection services
+  # NOTE: defined locally (not from k3sLib) to avoid _module.args cycle.
+  # k3sLib.mkSecretService exists in lib.nix for non-module consumers.
   mkSecretService = {
     name,
     description,
