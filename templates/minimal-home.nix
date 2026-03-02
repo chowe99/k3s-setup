@@ -13,7 +13,6 @@
     ../configs/zsh.nix
     ../configs/oh-my-posh.nix
     ../configs/zoxide.nix
-    ../configs/home-agenix.nix
     ../configs/fastfetch.nix
   ];
 

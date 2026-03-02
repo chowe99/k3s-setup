@@ -19,8 +19,6 @@
     ../configs/fzf.nix
     ../configs/ripgrep.nix
     ../configs/jq.nix
-    ../configs/home-agenix.nix
-    ../configs/claude-code.nix
     ../configs/opencode.nix
     ../configs/fastfetch.nix
   ];
