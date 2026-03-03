@@ -140,6 +140,32 @@ in {
         default = 3;
         description = "Number of PostgreSQL instances in the cluster";
       };
+      resources = {
+        requests = {
+          memory = lib.mkOption {
+            type = lib.types.str;
+            default = "512Mi";
+            description = "Memory request per CNPG instance";
+          };
+          cpu = lib.mkOption {
+            type = lib.types.str;
+            default = "500m";
+            description = "CPU request per CNPG instance";
+          };
+        };
+        limits = {
+          memory = lib.mkOption {
+            type = lib.types.str;
+            default = "2Gi";
+            description = "Memory limit per CNPG instance";
+          };
+          cpu = lib.mkOption {
+            type = lib.types.str;
+            default = "2000m";
+            description = "CPU limit per CNPG instance";
+          };
+        };
+      };
     };
   };
 

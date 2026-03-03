@@ -30,12 +30,12 @@ in {
           };
           resources = {
             requests = {
-              memory = "512Mi";
-              cpu = "500m";
+              memory = cnpgCfg.resources.requests.memory;
+              cpu = cnpgCfg.resources.requests.cpu;
             };
             limits = {
-              memory = "2Gi";
-              cpu = "2000m";
+              memory = cnpgCfg.resources.limits.memory;
+              cpu = cnpgCfg.resources.limits.cpu;
             };
           };
           priorityClassName = "";
