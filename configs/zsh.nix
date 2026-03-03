@@ -93,6 +93,11 @@ in {
       alias kubectl='sudo k3s kubectl'
       ZSH_HIGHLIGHT_STYLES[path]=fg=#8A2BE2
 
+      # Set fallback terminal if xterm-kitty not available
+      if ! tput longname 2>/dev/null | grep -q "xterm"; then
+        export TERM=xterm-256color
+      fi
+
       # Export secrets from home-manager agenix cache
       SECRETS_DIR="$HOME/.agenix-cache"
       if [[ -n "$SECRETS_DIR" && -f "$SECRETS_DIR/openai-api-key" ]]; then
