@@ -166,6 +166,23 @@ in {
           };
         };
       };
+      bootstrap = {
+        database = lib.mkOption {
+          type = lib.types.str;
+          default = "app";
+          description = "Database to create during CNPG bootstrap";
+        };
+        owner = lib.mkOption {
+          type = lib.types.str;
+          default = "app";
+          description = "Owner of the bootstrap database";
+        };
+        secret = lib.mkOption {
+          type = lib.types.str;
+          default = "";
+          description = "K8s secret name with 'username' and 'password' keys for the DB owner. If empty, CNPG uses auto-generated credentials.";
+        };
+      };
       postgresqlParameters = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
         default = {

@@ -43,6 +43,12 @@ in {
             enablePodAntiAffinity = true;
             topologyKey = "kubernetes.io/hostname";
           };
+          bootstrap.initdb = {
+            database = cnpgCfg.bootstrap.database;
+            owner = cnpgCfg.bootstrap.owner;
+          } // lib.optionalAttrs (cnpgCfg.bootstrap.secret != "") {
+            secret.name = cnpgCfg.bootstrap.secret;
+          };
           postgresql.parameters = cnpgCfg.postgresqlParameters;
           superuserSecret.name = "postgresql-cluster-superuser";
         };
