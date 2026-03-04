@@ -32,11 +32,32 @@
       default = 24;
       description = "Network prefix length";
     };
+    authorizedKeys = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "SSH authorized public keys for root and the main user";
+    };
+    firewallTCPPorts = mkOption {
+      type = types.listOf types.port;
+      default = [22 80 443];
+      description = "Allowed TCP ports in the firewall";
+    };
+    firewallUDPPorts = mkOption {
+      type = types.listOf types.port;
+      default = [];
+      description = "Allowed UDP ports in the firewall";
+    };
   };
 
   config = let
     cfg = config.vps;
   in {
+    assertions = [
+      {
+        assertion = cfg.authorizedKeys != [];
+        message = "vps.authorizedKeys must contain at least one SSH public key";
+      }
+    ];
     nix.settings.experimental-features = ["nix-command" "flakes"];
 
     # Bootloader (BIOS/MBR — standard for cloud VPS)
@@ -62,12 +83,8 @@
     };
     networking.firewall = {
       enable = true;
-      allowedTCPPorts = [
-        22 # SSH
-        80 # HTTP
-        443 # HTTPS
-      ];
-      allowedUDPPorts = [];
+      allowedTCPPorts = cfg.firewallTCPPorts;
+      allowedUDPPorts = cfg.firewallUDPPorts;
       trustedInterfaces = ["docker0" "br-+"];
     };
 
@@ -95,14 +112,10 @@
       description = username;
       extraGroups = ["wheel" "docker"];
       shell = pkgs.zsh;
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvwD8Or0RnfKcvW4jAWdgDaijtt9H/N3l10Dc0yIF1l slayer@nix-config"
-      ];
+      openssh.authorizedKeys.keys = cfg.authorizedKeys;
     };
 
-    users.users.root.openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvwD8Or0RnfKcvW4jAWdgDaijtt9H/N3l10Dc0yIF1l slayer@nix-config"
-    ];
+    users.users.root.openssh.authorizedKeys.keys = cfg.authorizedKeys;
 
     programs.zsh.enable = true;
     nixpkgs.config.allowUnfree = true;

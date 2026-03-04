@@ -47,6 +47,7 @@ in {
           GITEA__server__ROOT_URL = "https://git.${fullDomain}/";
           GITEA__server__HTTP_PORT = "3000";
           GITEA__server__SSH_PORT = sshPort;
+          GITEA__server__SSH_DOMAIN = "git.${fullDomain}";
           GITEA__server__SSH_LISTEN_PORT = sshPort;
           GITEA__server__DISABLE_SSH = sshDisabled;
           GITEA__server__START_SSH_SERVER = "true";
