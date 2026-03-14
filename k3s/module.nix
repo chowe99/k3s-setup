@@ -140,6 +140,11 @@ in {
         default = 3;
         description = "Number of PostgreSQL instances in the cluster";
       };
+      excludeNodes = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "List of node hostnames to exclude from CNPG pod scheduling via nodeAffinity";
+      };
       resources = {
         requests = {
           memory = lib.mkOption {
