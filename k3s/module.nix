@@ -183,6 +183,11 @@ in {
           description = "K8s secret name with 'username' and 'password' keys for the DB owner. If empty, CNPG uses auto-generated credentials.";
         };
       };
+      excludeNodes = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "List of node hostnames to exclude from CNPG pod scheduling";
+      };
       postgresqlParameters = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
         default = {

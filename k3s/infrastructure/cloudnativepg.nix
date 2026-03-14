@@ -42,6 +42,22 @@ in {
           affinity = {
             enablePodAntiAffinity = true;
             topologyKey = "kubernetes.io/hostname";
+          } // lib.optionalAttrs (cnpgCfg.excludeNodes != []) {
+            nodeAffinity = {
+              requiredDuringSchedulingIgnoredDuringExecution = {
+                nodeSelectorTerms = [
+                  {
+                    matchExpressions = [
+                      {
+                        key = "kubernetes.io/hostname";
+                        operator = "NotIn";
+                        values = cnpgCfg.excludeNodes;
+                      }
+                    ];
+                  }
+                ];
+              };
+            };
           };
           bootstrap.initdb = {
             database = cnpgCfg.bootstrap.database;
